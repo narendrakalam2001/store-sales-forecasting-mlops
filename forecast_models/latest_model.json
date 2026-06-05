@@ -1,0 +1,14 @@
+{
+  "lgbm_model_path": "forecast_models\\forecast_model_LightGBM_v1.joblib",
+  "preprocessor_path": "forecast_models\\tree_preprocessor.joblib",
+  "ensemble_weights": {
+    "lgbm": 1.0,
+    "prophet": 0.0,
+    "lstm": 0.0,
+    "rmsle": 0.373943
+  },
+  "rmsle": 0.373943,
+  "r2": 0.9761,
+  "trained_at": "2026-05-15 18:50:22",
+  "model_card_path": "forecast_models\\model_card_ensemble_v1.json"
+}

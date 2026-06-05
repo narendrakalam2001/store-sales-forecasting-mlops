@@ -1,0 +1,24 @@
+# ── Python cache ─────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.ipynb_checkpoints/
+
+# ── Large model files (>100MB — GitHub limit) ────────────────
+forecast_models/prophet_models.joblib
+
+# ── MLflow local runs (not needed on GitHub) ─────────────────
+mlruns/
+
+# ── Coverage reports ─────────────────────────────────────────
+.coverage
+htmlcov/
+
+# ── OS files ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Env ──────────────────────────────────────────────────────
+.env
+venv/
+.venv/

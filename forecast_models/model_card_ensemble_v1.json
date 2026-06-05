@@ -1,0 +1,210 @@
+{
+  "project": "Store Sales Forecasting System",
+  "trained_at": "2026-05-15 18:50:22",
+  "dataset": {
+    "source": "Kaggle \u2014 store-sales-time-series-forecasting",
+    "train_rows": 2922480,
+    "val_rows": 28512,
+    "n_features": 62
+  },
+  "models_evaluated": [
+    {
+      "model": "LightGBM",
+      "rmsle": 0.37394,
+      "rmse": 193.18458,
+      "mae": 56.47705,
+      "mape": 31.72428,
+      "r2": 0.97605
+    },
+    {
+      "model": "Ensemble",
+      "rmsle": 0.37394,
+      "rmse": 193.18458,
+      "mae": 56.47705,
+      "mape": 31.72428,
+      "r2": 0.97605
+    },
+    {
+      "model": "Prophet",
+      "rmsle": 0.7858,
+      "rmse": 2114.39438,
+      "mae": 284.61812,
+      "mape": 57.33672,
+      "r2": -1.86871
+    }
+  ],
+  "ensemble_weights": {
+    "lgbm": 1.0,
+    "prophet": 0.0,
+    "lstm": 0.0,
+    "rmsle": 0.373943
+  },
+  "best_model": {
+    "name": "Ensemble",
+    "rmsle": 0.373943,
+    "rmse": 193.1846,
+    "mae": 56.477,
+    "mape": 31.7243,
+    "r2": 0.9761
+  },
+  "feature_cols": [
+    "store_nbr",
+    "onpromotion",
+    "cluster",
+    "store_type_enc",
+    "dcoilwtico",
+    "is_national_holiday",
+    "is_regional_holiday",
+    "is_local_holiday",
+    "is_holiday_event",
+    "is_transferred",
+    "is_work_day",
+    "holiday_count",
+    "is_any_holiday",
+    "is_earthquake_pre",
+    "is_earthquake_post",
+    "days_to_holiday",
+    "days_after_holiday",
+    "day_of_week",
+    "day_of_month",
+    "month",
+    "year",
+    "quarter",
+    "week_of_year",
+    "is_weekend",
+    "is_month_start",
+    "is_month_end",
+    "days_since_start",
+    "is_payday",
+    "sales_lag_1",
+    "sales_lag_7",
+    "sales_lag_14",
+    "sales_lag_28",
+    "log1p_lag_1",
+    "log1p_lag_7",
+    "log1p_lag_14",
+    "log1p_lag_28",
+    "rolling_mean_7d",
+    "rolling_std_7d",
+    "rolling_mean_14d",
+    "rolling_std_14d",
+    "rolling_mean_28d",
+    "rolling_std_28d",
+    "ewm_alpha_07",
+    "ewm_alpha_03",
+    "is_promoted",
+    "promo_lag_1",
+    "promo_lag_7",
+    "promo_rolling_7d",
+    "promo_x_lag7",
+    "oil_rolling_7d",
+    "oil_rolling_28d",
+    "oil_pct_change_7d",
+    "oil_regime_high",
+    "txn_lag_1",
+    "txn_lag_7",
+    "txn_rolling_7d",
+    "txn_rolling_28d",
+    "family_sales_mean",
+    "store_sales_mean",
+    "cluster_sales_mean",
+    "family_enc",
+    "family_zero_pct"
+  ],
+  "feature_importances": {
+    "is_national_holiday": 125456627.28095812,
+    "holiday_count": 64530401.433858484,
+    "is_any_holiday": 6402170.467344135,
+    "sales_lag_28": 4287404.107945412,
+    "cluster": 2621013.3942617774,
+    "sales_lag_14": 2566501.5157206655,
+    "onpromotion": 1618887.2268645465,
+    "log1p_lag_1": 1055957.8133122027,
+    "store_type_enc": 1020249.0177018642,
+    "is_promoted": 588717.8792855144,
+    "ewm_alpha_03": 483134.6117114723,
+    "is_transferred": 340049.42536219954,
+    "week_of_year": 337256.40342360735,
+    "log1p_lag_7": 302322.8672488034,
+    "is_payday": 294429.98582565784,
+    "dcoilwtico": 256305.8530653119,
+    "rolling_std_7d": 224773.34549814463,
+    "sales_lag_1": 210716.0628427565,
+    "is_month_start": 176565.65007156134,
+    "family_sales_mean": 154465.24983263016
+  },
+  "shap_top_features": {
+    "is_national_holiday": 0.947888,
+    "holiday_count": 0.686168,
+    "store_nbr": 0.192753,
+    "rolling_std_7d": 0.129753,
+    "day_of_week": 0.112375,
+    "sales_lag_14": 0.109206,
+    "onpromotion": 0.10113,
+    "is_any_holiday": 0.080584,
+    "sales_lag_28": 0.071791,
+    "cluster": 0.070296,
+    "year": 0.050745,
+    "family_enc": 0.046332,
+    "ewm_alpha_03": 0.045298,
+    "is_regional_holiday": 0.045255,
+    "is_transferred": 0.032944,
+    "quarter": 0.031017,
+    "store_type_enc": 0.026375,
+    "sales_lag_7": 0.026309,
+    "log1p_lag_1": 0.024559,
+    "is_local_holiday": 0.022265
+  },
+  "drift_report": [
+    {
+      "feature": "days_since_start",
+      "drift_score": 12.433855885838547,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "week_of_year",
+      "drift_score": 12.182352684313786,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "month",
+      "drift_score": 10.15825931636712,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "dcoilwtico",
+      "drift_score": 9.76157973169048,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "year",
+      "drift_score": 8.64903756896536,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "quarter",
+      "drift_score": 7.101457293626314,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "days_after_holiday",
+      "drift_score": 4.878199814294984,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "day_of_month",
+      "drift_score": 4.828287833189117,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "days_to_holiday",
+      "drift_score": 4.209549392632505,
+      "status": "CRITICAL"
+    },
+    {
+      "feature": "oil_pct_change_7d",
+      "drift_score": 3.8421875750493486,
+      "status": "CRITICAL"
+    }
+  ]
+}

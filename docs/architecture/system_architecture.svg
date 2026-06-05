@@ -1,0 +1,302 @@
+<svg width="1100" viewBox="0 0 1100 980" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Arial, sans-serif">
+
+  <!-- TITLE -->
+  <text x="550" y="26" text-anchor="middle" font-size="16" font-weight="700" fill="#1a1a2e">Store Sales Time Series Forecasting — System Architecture</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LAYER 1 — DATA LAYER  (blue)
+  ════════════════════════════════════════════════════════ -->
+  <rect x="10" y="38" width="1080" height="118" rx="8" fill="#0d1b4b" opacity="0.95"/>
+  <text x="18" y="54" font-size="10" font-weight="700" fill="#7eb3f7" letter-spacing="1.5">DATA LAYER</text>
+
+  <!-- train.csv -->
+  <rect x="28" y="60" width="148" height="82" rx="6" fill="#1a3a7a" stroke="#4a7fd4" stroke-width="0.8"/>
+  <text x="102" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#e8f0fe">train.csv</text>
+  <text x="102" y="97" text-anchor="middle" font-size="10" fill="#93b8f7">3M rows · 2013–2017</text>
+  <text x="102" y="111" text-anchor="middle" font-size="10" fill="#93b8f7">54 stores · 33 families</text>
+  <text x="102" y="125" text-anchor="middle" font-size="10" fill="#93b8f7">daily unit sales</text>
+
+  <!-- stores.csv -->
+  <rect x="192" y="60" width="148" height="82" rx="6" fill="#1a3a7a" stroke="#4a7fd4" stroke-width="0.8"/>
+  <text x="266" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#e8f0fe">stores.csv</text>
+  <text x="266" y="97" text-anchor="middle" font-size="10" fill="#93b8f7">store metadata</text>
+  <text x="266" y="111" text-anchor="middle" font-size="10" fill="#93b8f7">type (A–E) · cluster</text>
+  <text x="266" y="125" text-anchor="middle" font-size="10" fill="#93b8f7">city · state</text>
+
+  <!-- oil.csv -->
+  <rect x="356" y="60" width="148" height="82" rx="6" fill="#1a3a7a" stroke="#4a7fd4" stroke-width="0.8"/>
+  <text x="430" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#e8f0fe">oil.csv</text>
+  <text x="430" y="97" text-anchor="middle" font-size="10" fill="#93b8f7">WTI daily price</text>
+  <text x="430" y="111" text-anchor="middle" font-size="10" fill="#93b8f7">forward-filled NaNs</text>
+  <text x="430" y="125" text-anchor="middle" font-size="10" fill="#93b8f7">rolling 7d · 28d</text>
+
+  <!-- holidays_events.csv -->
+  <rect x="520" y="60" width="148" height="82" rx="6" fill="#1a3a7a" stroke="#4a7fd4" stroke-width="0.8"/>
+  <text x="594" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#e8f0fe">holidays_events.csv</text>
+  <text x="594" y="97" text-anchor="middle" font-size="10" fill="#93b8f7">national · regional</text>
+  <text x="594" y="111" text-anchor="middle" font-size="10" fill="#93b8f7">local · transferred</text>
+  <text x="594" y="125" text-anchor="middle" font-size="10" fill="#93b8f7">proximity flags</text>
+
+  <!-- transactions.csv -->
+  <rect x="684" y="60" width="148" height="82" rx="6" fill="#1a3a7a" stroke="#4a7fd4" stroke-width="0.8"/>
+  <text x="758" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#e8f0fe">transactions.csv</text>
+  <text x="758" y="97" text-anchor="middle" font-size="10" fill="#93b8f7">daily store txns</text>
+  <text x="758" y="111" text-anchor="middle" font-size="10" fill="#93b8f7">txn_lag_1 · txn_lag_7</text>
+  <text x="758" y="125" text-anchor="middle" font-size="10" fill="#93b8f7">txn_rolling_7d · 28d</text>
+
+  <!-- Data Validation -->
+  <rect x="848" y="60" width="228" height="82" rx="6" fill="#1a3a7a" stroke="#4a7fd4" stroke-width="0.8"/>
+  <text x="962" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#e8f0fe">data_loader.py</text>
+  <text x="962" y="97" text-anchor="middle" font-size="10" fill="#93b8f7">validate · merge 6 CSVs</text>
+  <text x="962" y="111" text-anchor="middle" font-size="10" fill="#93b8f7">schema · nulls · duplicates</text>
+  <text x="962" y="125" text-anchor="middle" font-size="10" fill="#93b8f7">leakage_check.py ✅</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="550" y1="156" x2="550" y2="172" stroke="#4a7fd4" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LAYER 2 — FEATURE ENGINEERING  (teal/green)
+  ════════════════════════════════════════════════════════ -->
+  <rect x="10" y="172" width="1080" height="118" rx="8" fill="#0a2e2a" opacity="0.95"/>
+  <text x="18" y="188" font-size="10" font-weight="700" fill="#5ee8c8" letter-spacing="1.5">FEATURE ENGINEERING</text>
+
+  <!-- Lag Features -->
+  <rect x="28" y="194" width="165" height="82" rx="6" fill="#0f3d35" stroke="#2ecc9a" stroke-width="0.8"/>
+  <text x="110" y="216" text-anchor="middle" font-size="11" font-weight="700" fill="#d0fff5">Lag Features</text>
+  <text x="110" y="231" text-anchor="middle" font-size="10" fill="#7be0c5">sales_lag_1 · 7 · 14 · 28</text>
+  <text x="110" y="245" text-anchor="middle" font-size="10" fill="#7be0c5">log1p_lag_1 · 7 · 14 · 28</text>
+  <text x="110" y="259" text-anchor="middle" font-size="10" fill="#7be0c5">grouped by store + family</text>
+
+  <!-- Rolling Features -->
+  <rect x="208" y="194" width="165" height="82" rx="6" fill="#0f3d35" stroke="#2ecc9a" stroke-width="0.8"/>
+  <text x="290" y="216" text-anchor="middle" font-size="11" font-weight="700" fill="#d0fff5">Rolling Features</text>
+  <text x="290" y="231" text-anchor="middle" font-size="10" fill="#7be0c5">rolling_mean 7d·14d·28d</text>
+  <text x="290" y="245" text-anchor="middle" font-size="10" fill="#7be0c5">rolling_std 7d·14d·28d</text>
+  <text x="290" y="259" text-anchor="middle" font-size="10" fill="#7be0c5">ewm_alpha 0.7 · 0.3</text>
+
+  <!-- Calendar Features -->
+  <rect x="388" y="194" width="165" height="82" rx="6" fill="#0f3d35" stroke="#2ecc9a" stroke-width="0.8"/>
+  <text x="470" y="216" text-anchor="middle" font-size="11" font-weight="700" fill="#d0fff5">Calendar Features</text>
+  <text x="470" y="231" text-anchor="middle" font-size="10" fill="#7be0c5">dow · month · quarter</text>
+  <text x="470" y="245" text-anchor="middle" font-size="10" fill="#7be0c5">week · is_weekend · payday</text>
+  <text x="470" y="259" text-anchor="middle" font-size="10" fill="#7be0c5">days_since_start</text>
+
+  <!-- Promo + Oil -->
+  <rect x="568" y="194" width="165" height="82" rx="6" fill="#0f3d35" stroke="#2ecc9a" stroke-width="0.8"/>
+  <text x="650" y="216" text-anchor="middle" font-size="11" font-weight="700" fill="#d0fff5">Promo + Oil</text>
+  <text x="650" y="231" text-anchor="middle" font-size="10" fill="#7be0c5">promo_lag_1 · 7 · rolling</text>
+  <text x="650" y="245" text-anchor="middle" font-size="10" fill="#7be0c5">oil_rolling_7d · 28d</text>
+  <text x="650" y="259" text-anchor="middle" font-size="10" fill="#7be0c5">oil_pct_change · regime</text>
+
+  <!-- Store Encoding -->
+  <rect x="748" y="194" width="165" height="82" rx="6" fill="#0f3d35" stroke="#2ecc9a" stroke-width="0.8"/>
+  <text x="830" y="216" text-anchor="middle" font-size="11" font-weight="700" fill="#d0fff5">Store Encoding</text>
+  <text x="830" y="231" text-anchor="middle" font-size="10" fill="#7be0c5">type (A–E) · cluster</text>
+  <text x="830" y="245" text-anchor="middle" font-size="10" fill="#7be0c5">family_enc · zero_pct</text>
+  <text x="830" y="259" text-anchor="middle" font-size="10" fill="#7be0c5">target-encode means</text>
+
+  <!-- 62 Features Total -->
+  <rect x="928" y="194" width="148" height="82" rx="6" fill="#0f3d35" stroke="#2ecc9a" stroke-width="0.8"/>
+  <text x="1002" y="216" text-anchor="middle" font-size="11" font-weight="700" fill="#d0fff5">62 Features Total</text>
+  <text x="1002" y="231" text-anchor="middle" font-size="10" fill="#7be0c5">feature_engineering.py</text>
+  <text x="1002" y="245" text-anchor="middle" font-size="10" fill="#7be0c5">preprocessing.py</text>
+  <text x="1002" y="259" text-anchor="middle" font-size="10" fill="#7be0c5">SmartImputer · Clipper</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="550" y1="290" x2="550" y2="306" stroke="#2ecc9a" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LAYER 3 — TRAINING LAYER  (purple)
+  ════════════════════════════════════════════════════════ -->
+  <rect x="10" y="306" width="1080" height="148" rx="8" fill="#1a0a3a" opacity="0.95"/>
+  <text x="18" y="322" font-size="10" font-weight="700" fill="#c084fc" letter-spacing="1.5">TRAINING — WALK-FORWARD VALIDATION (NO SHUFFLE · NO LEAKAGE)</text>
+
+  <!-- Walk-Forward Box -->
+  <rect x="28" y="330" width="200" height="110" rx="6" fill="#2d1060" stroke="#9333ea" stroke-width="0.8"/>
+  <text x="128" y="352" text-anchor="middle" font-size="11" font-weight="700" fill="#e9d5ff">Walk-Forward CV</text>
+  <text x="128" y="368" text-anchor="middle" font-size="10" fill="#c4b5fd">3 splits · val=16 days</text>
+  <text x="128" y="383" text-anchor="middle" font-size="10" fill="#c4b5fd">train → val (no future)</text>
+  <text x="128" y="398" text-anchor="middle" font-size="10" fill="#c4b5fd">expanding window</text>
+  <text x="128" y="413" text-anchor="middle" font-size="10" fill="#c4b5fd">preprocessing.py</text>
+  <text x="128" y="428" text-anchor="middle" font-size="10" fill="#c4b5fd">walk_forward_splits()</text>
+
+  <!-- LightGBM -->
+  <rect x="248" y="330" width="192" height="110" rx="6" fill="#2d1060" stroke="#9333ea" stroke-width="0.8"/>
+  <text x="344" y="352" text-anchor="middle" font-size="11" font-weight="700" fill="#e9d5ff">LightGBM ⭐</text>
+  <text x="344" y="368" text-anchor="middle" font-size="10" fill="#c4b5fd">log1p target · RMSE loss</text>
+  <text x="344" y="383" text-anchor="middle" font-size="10" fill="#c4b5fd">2000 trees · early stop</text>
+  <text x="344" y="398" text-anchor="middle" font-size="10" fill="#c4b5fd">RMSLE: 0.37394</text>
+  <text x="344" y="413" text-anchor="middle" font-size="10" fill="#c4b5fd">R²: 0.9761</text>
+  <text x="344" y="428" text-anchor="middle" font-size="10" fill="#c4b5fd">WAPE: 12.09%</text>
+
+  <!-- Prophet -->
+  <rect x="456" y="330" width="192" height="110" rx="6" fill="#2d1060" stroke="#9333ea" stroke-width="0.8"/>
+  <text x="552" y="352" text-anchor="middle" font-size="11" font-weight="700" fill="#e9d5ff">Prophet</text>
+  <text x="552" y="368" text-anchor="middle" font-size="10" fill="#c4b5fd">per store-family series</text>
+  <text x="552" y="383" text-anchor="middle" font-size="10" fill="#c4b5fd">multiplicative seasonal</text>
+  <text x="552" y="398" text-anchor="middle" font-size="10" fill="#c4b5fd">holiday regressors</text>
+  <text x="552" y="413" text-anchor="middle" font-size="10" fill="#c4b5fd">RMSLE: 0.78580</text>
+  <text x="552" y="428" text-anchor="middle" font-size="10" fill="#c4b5fd">1782 series trained</text>
+
+  <!-- LSTM -->
+  <rect x="664" y="330" width="192" height="110" rx="6" fill="#2d1060" stroke="#9333ea" stroke-width="0.8"/>
+  <text x="760" y="352" text-anchor="middle" font-size="11" font-weight="700" fill="#e9d5ff">LSTM</text>
+  <text x="760" y="368" text-anchor="middle" font-size="10" fill="#c4b5fd">28-day input window</text>
+  <text x="760" y="383" text-anchor="middle" font-size="10" fill="#c4b5fd">2-layer · dropout 0.2</text>
+  <text x="760" y="398" text-anchor="middle" font-size="10" fill="#c4b5fd">top-20 SHAP features</text>
+  <text x="760" y="413" text-anchor="middle" font-size="10" fill="#c4b5fd">early stopping p=5</text>
+  <text x="760" y="428" text-anchor="middle" font-size="10" fill="#c4b5fd">StandardScaler path</text>
+
+  <!-- Ensemble -->
+  <rect x="872" y="330" width="204" height="110" rx="6" fill="#3b0764" stroke="#a855f7" stroke-width="1.5"/>
+  <text x="974" y="352" text-anchor="middle" font-size="11" font-weight="700" fill="#f3e8ff">Weighted Ensemble</text>
+  <text x="974" y="368" text-anchor="middle" font-size="10" fill="#d8b4fe">LGBM: 1.0 · Prophet: 0.0</text>
+  <text x="974" y="383" text-anchor="middle" font-size="10" fill="#d8b4fe">LSTM: 0.0 (grid-search)</text>
+  <text x="974" y="398" text-anchor="middle" font-size="10" fill="#d8b4fe">RMSLE: 0.37394</text>
+  <text x="974" y="413" text-anchor="middle" font-size="10" fill="#d8b4fe">R²: 0.9761  MAE: 56.48</text>
+  <text x="974" y="428" text-anchor="middle" font-size="10" fill="#d8b4fe">ensemble_config.json</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="550" y1="454" x2="550" y2="470" stroke="#a855f7" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LAYER 4 — MODEL OPS  (orange/amber)
+  ════════════════════════════════════════════════════════ -->
+  <rect x="10" y="470" width="1080" height="118" rx="8" fill="#2a1500" opacity="0.95"/>
+  <text x="18" y="486" font-size="10" font-weight="700" fill="#fb923c" letter-spacing="1.5">MODEL OPS</text>
+
+  <!-- Forecast Engine -->
+  <rect x="28" y="492" width="190" height="82" rx="6" fill="#3d1f00" stroke="#f97316" stroke-width="0.8"/>
+  <text x="123" y="514" text-anchor="middle" font-size="11" font-weight="700" fill="#fff7ed">Forecast Engine</text>
+  <text x="123" y="529" text-anchor="middle" font-size="10" fill="#fdba74">confidence bands H/M/L</text>
+  <text x="123" y="543" text-anchor="middle" font-size="10" fill="#fdba74">business rules engine</text>
+  <text x="123" y="557" text-anchor="middle" font-size="10" fill="#fdba74">forecast_engine.py</text>
+
+  <!-- Business Rules -->
+  <rect x="233" y="492" width="190" height="82" rx="6" fill="#3d1f00" stroke="#f97316" stroke-width="0.8"/>
+  <text x="328" y="514" text-anchor="middle" font-size="11" font-weight="700" fill="#fff7ed">Business Rules</text>
+  <text x="328" y="529" text-anchor="middle" font-size="10" fill="#fdba74">STORE_CLOSED → 0</text>
+  <text x="328" y="543" text-anchor="middle" font-size="10" fill="#fdba74">HIGH_ZERO_FAM_NO_PROMO</text>
+  <text x="328" y="557" text-anchor="middle" font-size="10" fill="#fdba74">NEGATIVE_CLIP → 0</text>
+
+  <!-- SHAP + MLflow -->
+  <rect x="438" y="492" width="190" height="82" rx="6" fill="#3d1f00" stroke="#f97316" stroke-width="0.8"/>
+  <text x="533" y="514" text-anchor="middle" font-size="11" font-weight="700" fill="#fff7ed">SHAP + MLflow</text>
+  <text x="533" y="529" text-anchor="middle" font-size="10" fill="#fdba74">top-20 feature importance</text>
+  <text x="533" y="543" text-anchor="middle" font-size="10" fill="#fdba74">experiment tracking</text>
+  <text x="533" y="557" text-anchor="middle" font-size="10" fill="#fdba74">evaluation.py</text>
+
+  <!-- Champion vs Challenger -->
+  <rect x="643" y="492" width="190" height="82" rx="6" fill="#3d1f00" stroke="#f97316" stroke-width="0.8"/>
+  <text x="738" y="509" text-anchor="middle" font-size="11" font-weight="700" fill="#fff7ed">Champion vs Challenger</text>
+  <text x="738" y="524" text-anchor="middle" font-size="10" fill="#fdba74">Gate 1: RMSLE Δ ≥ 0.005</text>
+  <text x="738" y="538" text-anchor="middle" font-size="10" fill="#fdba74">Gate 2: R² ≥ 0.80</text>
+  <text x="738" y="552" text-anchor="middle" font-size="10" fill="#fdba74">Gate 3: WAPE ≤ champion</text>
+  <text x="738" y="566" text-anchor="middle" font-size="10" fill="#fdba74">metrics.py · compare_models()</text>
+
+  <!-- Model Registry -->
+  <rect x="848" y="492" width="228" height="82" rx="6" fill="#3d1f00" stroke="#f97316" stroke-width="0.8"/>
+  <text x="962" y="514" text-anchor="middle" font-size="11" font-weight="700" fill="#fff7ed">Model Registry</text>
+  <text x="962" y="529" text-anchor="middle" font-size="10" fill="#fdba74">latest_model.json</text>
+  <text x="962" y="543" text-anchor="middle" font-size="10" fill="#fdba74">model_card_ensemble_v1.json</text>
+  <text x="962" y="557" text-anchor="middle" font-size="10" fill="#fdba74">forecast_model_LightGBM_v1.joblib</text>
+  <text x="962" y="571" text-anchor="middle" font-size="10" fill="#fdba74">encoding_stats.json</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="550" y1="588" x2="550" y2="604" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LAYER 5 — SERVING + MONITORING  (two sub-columns)
+  ════════════════════════════════════════════════════════ -->
+  <rect x="10" y="604" width="1080" height="148" rx="8" fill="#001a12" opacity="0.95"/>
+  <text x="18" y="620" font-size="10" font-weight="700" fill="#34d399" letter-spacing="1.5">SERVING + MONITORING</text>
+
+  <!-- SERVING sub-section -->
+  <rect x="28" y="628" width="516" height="110" rx="6" fill="#002910" stroke="#10b981" stroke-width="0.8"/>
+  <text x="286" y="647" text-anchor="middle" font-size="11" font-weight="700" fill="#d1fae5">⚡ Real-Time Serving</text>
+
+  <!-- FastAPI -->
+  <rect x="40" y="655" width="148" height="72" rx="5" fill="#003d18" stroke="#059669" stroke-width="0.8"/>
+  <text x="114" y="673" text-anchor="middle" font-size="10" font-weight="700" fill="#a7f3d0">FastAPI</text>
+  <text x="114" y="687" text-anchor="middle" font-size="9" fill="#6ee7b7">POST /forecast</text>
+  <text x="114" y="700" text-anchor="middle" font-size="9" fill="#6ee7b7">POST /forecast_batch</text>
+  <text x="114" y="713" text-anchor="middle" font-size="9" fill="#6ee7b7">GET /health · /model_info</text>
+
+  <!-- Prediction Service -->
+  <rect x="198" y="655" width="148" height="72" rx="5" fill="#003d18" stroke="#059669" stroke-width="0.8"/>
+  <text x="272" y="673" text-anchor="middle" font-size="10" font-weight="700" fill="#a7f3d0">Prediction Service</text>
+  <text x="272" y="687" text-anchor="middle" font-size="9" fill="#6ee7b7">feature build → infer</text>
+  <text x="272" y="700" text-anchor="middle" font-size="9" fill="#6ee7b7">confidence band</text>
+  <text x="272" y="713" text-anchor="middle" font-size="9" fill="#6ee7b7">rule apply → log</text>
+
+  <!-- Store Simulator -->
+  <rect x="356" y="655" width="176" height="72" rx="5" fill="#003d18" stroke="#059669" stroke-width="0.8"/>
+  <text x="444" y="673" text-anchor="middle" font-size="10" font-weight="700" fill="#a7f3d0">Store Simulator</text>
+  <text x="444" y="687" text-anchor="middle" font-size="9" fill="#6ee7b7">random · high_promo</text>
+  <text x="444" y="700" text-anchor="middle" font-size="9" fill="#6ee7b7">holiday scenarios</text>
+  <text x="444" y="713" text-anchor="middle" font-size="9" fill="#6ee7b7">store_simulator.py</text>
+
+  <!-- MONITORING sub-section -->
+  <rect x="556" y="628" width="520" height="110" rx="6" fill="#002910" stroke="#10b981" stroke-width="0.8"/>
+  <text x="816" y="647" text-anchor="middle" font-size="11" font-weight="700" fill="#d1fae5">📊 Monitoring Dashboard</text>
+
+  <!-- Streamlit -->
+  <rect x="568" y="655" width="148" height="72" rx="5" fill="#003d18" stroke="#059669" stroke-width="0.8"/>
+  <text x="642" y="673" text-anchor="middle" font-size="10" font-weight="700" fill="#a7f3d0">Streamlit Dashboard</text>
+  <text x="642" y="687" text-anchor="middle" font-size="9" fill="#6ee7b7">KPIs · alerts · drift</text>
+  <text x="642" y="700" text-anchor="middle" font-size="9" fill="#6ee7b7">forecast vs actual</text>
+  <text x="642" y="713" text-anchor="middle" font-size="9" fill="#6ee7b7">conf bands · SHAP</text>
+
+  <!-- PSI Drift -->
+  <rect x="728" y="655" width="148" height="72" rx="5" fill="#003d18" stroke="#059669" stroke-width="0.8"/>
+  <text x="802" y="673" text-anchor="middle" font-size="10" font-weight="700" fill="#a7f3d0">PSI Drift Monitor</text>
+  <text x="802" y="687" text-anchor="middle" font-size="9" fill="#6ee7b7">PSI &lt; 0.10 → OK</text>
+  <text x="802" y="700" text-anchor="middle" font-size="9" fill="#6ee7b7">PSI 0.10–0.20 → warn</text>
+  <text x="802" y="713" text-anchor="middle" font-size="9" fill="#6ee7b7">PSI &gt; 0.20 → retrain</text>
+
+  <!-- Docker + CI -->
+  <rect x="888" y="655" width="176" height="72" rx="5" fill="#003d18" stroke="#059669" stroke-width="0.8"/>
+  <text x="976" y="673" text-anchor="middle" font-size="10" font-weight="700" fill="#a7f3d0">Docker + CI/CD</text>
+  <text x="976" y="687" text-anchor="middle" font-size="9" fill="#6ee7b7">Dockerfile · compose</text>
+  <text x="976" y="700" text-anchor="middle" font-size="9" fill="#6ee7b7">GitHub Actions CI</text>
+  <text x="976" y="713" text-anchor="middle" font-size="9" fill="#6ee7b7">Render · Streamlit Cloud</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       METRICS FOOTER BAR
+  ════════════════════════════════════════════════════════ -->
+  <rect x="10" y="762" width="1080" height="48" rx="8" fill="#0d1117" stroke="#30363d" stroke-width="0.8"/>
+  <text x="550" y="778" text-anchor="middle" font-size="10" font-weight="700" fill="#8b949e" letter-spacing="1">BEST MODEL RESULTS — LightGBM + Ensemble</text>
+  <text x="130" y="798" text-anchor="middle" font-size="12" font-weight="700" fill="#3fb950">RMSLE: 0.37394</text>
+  <text x="310" y="798" text-anchor="middle" font-size="12" font-weight="700" fill="#3fb950">R²: 0.9761</text>
+  <text x="490" y="798" text-anchor="middle" font-size="12" font-weight="700" fill="#3fb950">MAE: 56.48</text>
+  <text x="670" y="798" text-anchor="middle" font-size="12" font-weight="700" fill="#3fb950">MAPE: 31.72%</text>
+  <text x="850" y="798" text-anchor="middle" font-size="12" font-weight="700" fill="#3fb950">WAPE: 12.09%</text>
+  <text x="1000" y="798" text-anchor="middle" font-size="12" font-weight="700" fill="#3fb950">Bias: 3.17%</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       TECH STACK FOOTER
+  ════════════════════════════════════════════════════════ -->
+  <rect x="10" y="820" width="1080" height="36" rx="8" fill="#161b22" stroke="#30363d" stroke-width="0.8"/>
+  <text x="550" y="843" text-anchor="middle" font-size="10" fill="#8b949e">
+    Python 3.10 · LightGBM · Prophet · TensorFlow/Keras · Scikit-Learn · FastAPI · Streamlit · SHAP · MLflow · Pytest · Docker · GitHub Actions · Render · Streamlit Cloud
+  </text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ARROWHEAD MARKERS
+  ════════════════════════════════════════════════════════ -->
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4a7fd4"/>
+    </marker>
+    <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#2ecc9a"/>
+    </marker>
+    <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#a855f7"/>
+    </marker>
+    <marker id="arr4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f97316"/>
+    </marker>
+  </defs>
+
+</svg>

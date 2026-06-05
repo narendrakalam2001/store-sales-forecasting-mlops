@@ -1,0 +1,15 @@
+# ============================================================
+# REQUIREMENTS — API only (Render deployment)
+# Stripped of training-only deps (shap, mlflow, prophet, statsmodels)
+# to keep build fast on Render free tier
+# ============================================================
+
+fastapi
+uvicorn
+pandas==2.1.4
+numpy==1.26.4
+scikit-learn==1.3.2
+lightgbm
+joblib
+requests
+scipy

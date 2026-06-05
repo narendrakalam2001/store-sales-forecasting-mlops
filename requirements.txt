@@ -1,0 +1,23 @@
+# ============================================================
+# REQUIREMENTS — Store Sales Forecasting System
+# ============================================================
+
+fastapi
+uvicorn
+pandas==2.1.4
+numpy==1.26.4
+scikit-learn==1.3.2
+lightgbm
+xgboost
+prophet
+joblib
+shap
+mlflow
+matplotlib
+seaborn
+scipy
+statsmodels
+streamlit
+requests
+pytest
+pytest-cov
