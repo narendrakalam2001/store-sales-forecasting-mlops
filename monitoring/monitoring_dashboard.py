@@ -29,7 +29,6 @@ DRIFT_PATH    = os.path.join(MODEL_DIR, "feature_drift_report.csv")
 RESULTS_PATH  = os.path.join(MODEL_DIR, "model_experiment_results.csv")
 CARD_PATH     = os.path.join(MODEL_DIR, "model_card_ensemble_v1.json")
 LOG_PATH      = os.path.join(BASE_DIR,  "logs", "prediction_logs.csv")
-ENSEMBLE_PATH = os.path.join(MODEL_DIR, "ensemble_config.json")
 
 FAMILIES = [
     "GROCERY I", "BEVERAGES", "PRODUCE", "CLEANING", "DAIRY",
@@ -160,11 +159,10 @@ if os.path.exists(RESULTS_PATH):
     # ── Champion vs Challenger 3-Gate Visual ──────────────────
     st.markdown("#### ⚔️ Champion vs Challenger — Promotion Gates")
 
-    # Need at least 2 models to compare
     if "rmsle" in df_res.columns and len(df_res) >= 2:
-        df_sorted   = df_res.sort_values("rmsle").reset_index(drop=True)
-        champion    = df_sorted.iloc[0]   # best RMSLE = champion
-        challenger  = df_sorted.iloc[1]   # second best = challenger
+        df_sorted  = df_res.sort_values("rmsle").reset_index(drop=True)
+        champion   = df_sorted.iloc[0]
+        challenger = df_sorted.iloc[1]
 
         champ_rmsle  = float(champion.get("rmsle", 0))
         chal_rmsle   = float(challenger.get("rmsle", champ_rmsle))
@@ -172,86 +170,75 @@ if os.path.exists(RESULTS_PATH):
         champ_wape   = float(champion.get("wape",   100))
         chal_wape    = float(challenger.get("wape",  100))
 
-        rmsle_improvement = champ_rmsle - chal_rmsle   # positive = challenger better
+        rmsle_improvement = champ_rmsle - chal_rmsle
 
-        # Gate evaluation
-        # Gate 1: RMSLE improvement >= 0.005
         gate1_pass = rmsle_improvement >= 0.005
-        # Gate 2: Challenger R² >= 0.80
         gate2_pass = chal_r2 >= 0.80
-        # Gate 3: Challenger WAPE <= Champion WAPE
         gate3_pass = chal_wape <= champ_wape
+        promoted   = gate1_pass and gate2_pass and gate3_pass
 
-        gates_passed = sum([gate1_pass, gate2_pass, gate3_pass])
-        promoted     = gate1_pass and gate2_pass and gate3_pass
-
-        # ── Labels row ────────────────────────────────────────
+        # ── Champion / Challenger header cards ────────────────
         col_champ, col_chal = st.columns(2)
         col_champ.markdown(
-            f"<div style='background:#1a1a2e;padding:10px;border-radius:8px;"
-            f"border-left:4px solid #3498db'>"
-            f"<b style='color:#3498db'>👑 Champion</b><br>"
-            f"<span style='font-size:18px;font-weight:bold'>{champion['model']}</span><br>"
-            f"RMSLE: <b>{champ_rmsle:.5f}</b> &nbsp;|&nbsp; "
-            f"WAPE: <b>{champ_wape:.2f}%</b>"
-            f"</div>",
+            f"""<div style='background:#0d1b4b;padding:14px;border-radius:8px;
+            border-left:4px solid #3498db'>
+            <b style='color:#7eb3f7;font-size:15px'>👑 Champion</b><br>
+            <span style='color:#ffffff;font-size:20px;font-weight:700'>{champion['model']}</span><br>
+            <span style='color:#c0d8ff;font-size:13px'>
+            RMSLE: <b>{champ_rmsle:.5f}</b> &nbsp;|&nbsp; WAPE: <b>{champ_wape:.2f}%</b>
+            </span></div>""",
             unsafe_allow_html=True
         )
         col_chal.markdown(
-            f"<div style='background:#1a1a2e;padding:10px;border-radius:8px;"
-            f"border-left:4px solid #e74c3c'>"
-            f"<b style='color:#e74c3c'>🥊 Challenger</b><br>"
-            f"<span style='font-size:18px;font-weight:bold'>{challenger['model']}</span><br>"
-            f"RMSLE: <b>{chal_rmsle:.5f}</b> &nbsp;|&nbsp; "
-            f"R²: <b>{chal_r2:.4f}</b> &nbsp;|&nbsp; "
-            f"WAPE: <b>{chal_wape:.2f}%</b>"
-            f"</div>",
+            f"""<div style='background:#2a0a0a;padding:14px;border-radius:8px;
+            border-left:4px solid #e74c3c'>
+            <b style='color:#f8a0a0;font-size:15px'>🥊 Challenger</b><br>
+            <span style='color:#ffffff;font-size:20px;font-weight:700'>{challenger['model']}</span><br>
+            <span style='color:#ffd0d0;font-size:13px'>
+            RMSLE: <b>{chal_rmsle:.5f}</b> &nbsp;|&nbsp;
+            R²: <b>{chal_r2:.4f}</b> &nbsp;|&nbsp;
+            WAPE: <b>{chal_wape:.2f}%</b>
+            </span></div>""",
             unsafe_allow_html=True
         )
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ── 3 Gate columns ────────────────────────────────────
-        g1, g2, g3 = st.columns(3)
-
+        # ── 3 Gate cards ──────────────────────────────────────
         def _gate_card(col, title, passed, metric_label, metric_val, threshold_label):
-            color  = "#2ecc71" if passed else "#e74c3c"
+            border = "#2ecc71" if passed else "#e74c3c"
             icon   = "✅" if passed else "❌"
-            status = "PASS" if passed else "FAIL"
+            status = "PASS"  if passed else "FAIL"
+            status_color = "#2ecc71" if passed else "#e74c3c"
             col.markdown(
-                f"<div style='background:#1a1a2e;padding:16px;border-radius:10px;"
-                f"border:2px solid {color};text-align:center'>"
-                f"<div style='font-size:28px'>{icon}</div>"
-                f"<div style='color:{color};font-weight:bold;font-size:16px'>{title}</div>"
-                f"<div style='color:{color};font-size:22px;font-weight:bold'>{status}</div>"
-                f"<hr style='border-color:{color};margin:8px 0'>"
-                f"<div style='color:#ccc;font-size:13px'>{metric_label}</div>"
-                f"<div style='font-size:15px;font-weight:bold'>{metric_val}</div>"
-                f"<div style='color:#888;font-size:11px;margin-top:4px'>{threshold_label}</div>"
-                f"</div>",
+                f"""<div style='background:#0a0a1a;padding:18px;border-radius:10px;
+                border:2px solid {border};text-align:center'>
+                <div style='font-size:32px'>{icon}</div>
+                <div style='color:{border};font-weight:700;font-size:15px;margin-top:4px'>{title}</div>
+                <div style='color:{status_color};font-size:26px;font-weight:800;margin:6px 0'>{status}</div>
+                <hr style='border-color:{border};margin:10px 0;opacity:0.4'>
+                <div style='color:#dddddd;font-size:13px'>{metric_label}</div>
+                <div style='color:#ffffff;font-size:16px;font-weight:700;margin-top:4px'>{metric_val}</div>
+                <div style='color:#aaaaaa;font-size:11px;margin-top:6px'>{threshold_label}</div>
+                </div>""",
                 unsafe_allow_html=True
             )
 
+        g1, g2, g3 = st.columns(3)
         _gate_card(
-            g1,
-            "Gate 1 — RMSLE",
-            gate1_pass,
+            g1, "Gate 1 — RMSLE", gate1_pass,
             "Improvement",
             f"{rmsle_improvement:+.5f}",
             "Threshold: ≥ 0.005"
         )
         _gate_card(
-            g2,
-            "Gate 2 — R²",
-            gate2_pass,
+            g2, "Gate 2 — R²", gate2_pass,
             "Challenger R²",
             f"{chal_r2:.4f}",
             "Threshold: ≥ 0.80"
         )
         _gate_card(
-            g3,
-            "Gate 3 — WAPE",
-            gate3_pass,
+            g3, "Gate 3 — WAPE", gate3_pass,
             f"Challenger {chal_wape:.2f}% vs Champion {champ_wape:.2f}%",
             "Lower is better",
             "Challenger WAPE ≤ Champion WAPE"
@@ -259,20 +246,21 @@ if os.path.exists(RESULTS_PATH):
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ── Final verdict ─────────────────────────────────────
+        # ── Final verdict ──────────────────────────────────────
+        gates_passed = sum([gate1_pass, gate2_pass, gate3_pass])
         if promoted:
             st.success(
                 f"🚀 **PROMOTED** — Challenger '{challenger['model']}' passes all 3 gates "
                 f"({gates_passed}/3). Ready to replace champion."
             )
         else:
-            failed_gates = []
-            if not gate1_pass: failed_gates.append("RMSLE improvement insufficient")
-            if not gate2_pass: failed_gates.append(f"R² {chal_r2:.4f} below 0.80")
-            if not gate3_pass: failed_gates.append("WAPE worse than champion")
+            failed = []
+            if not gate1_pass: failed.append("RMSLE improvement insufficient")
+            if not gate2_pass: failed.append(f"R² {chal_r2:.4f} below 0.80")
+            if not gate3_pass: failed.append("WAPE worse than champion")
             st.error(
                 f"🔒 **REJECTED** — Challenger '{challenger['model']}' fails "
-                f"{3 - gates_passed}/3 gate(s): {' | '.join(failed_gates)}"
+                f"{3 - gates_passed}/3 gate(s): {' | '.join(failed)}"
             )
     else:
         st.info("Need at least 2 models in results to run Champion vs Challenger comparison.")
@@ -293,8 +281,10 @@ if os.path.exists(MONITOR_PATH):
             predicted =("predicted_sales", "sum"),
         ).reset_index()
         fig, ax = plt.subplots(figsize=(8, 4))
-        ax.plot(daily["date"], daily["actual"],    label="Actual",    linewidth=1.2, color="steelblue")
-        ax.plot(daily["date"], daily["predicted"], label="Predicted", linewidth=1.2, color="coral", linestyle="--")
+        ax.plot(daily["date"], daily["actual"],    label="Actual",
+                linewidth=1.2, color="steelblue")
+        ax.plot(daily["date"], daily["predicted"], label="Predicted",
+                linewidth=1.2, color="coral", linestyle="--")
         ax.set_title("Total Daily Sales — Actual vs Predicted")
         ax.legend()
         plt.tight_layout()
@@ -379,8 +369,10 @@ if os.path.exists(DRIFT_PATH):
                     else "#2ecc71" for v in df_psi["drift_score"].head(15)]
             ax.barh(df_psi["feature"].head(15), df_psi["drift_score"].head(15),
                     color=clrs, alpha=0.85)
-            ax.axvline(PSI_MODERATE, color="orange", linestyle="--", linewidth=1, label="Moderate")
-            ax.axvline(PSI_HIGH,     color="red",    linestyle="--", linewidth=1, label="Critical")
+            ax.axvline(PSI_MODERATE, color="orange", linestyle="--",
+                       linewidth=1, label="Moderate (0.10)")
+            ax.axvline(PSI_HIGH,     color="red",    linestyle="--",
+                       linewidth=1, label="Critical (0.20)")
             ax.set_title("Feature PSI Scores")
             ax.legend(fontsize=8)
             plt.tight_layout()

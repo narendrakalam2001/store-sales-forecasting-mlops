@@ -246,14 +246,16 @@ def update_model_registry(
     Updates latest_model.json — equivalent to Credit Risk project registry.
     Stores all paths needed by forecast_api.py to load the model.
     """
+    # Normalize paths to forward slash — Windows os.path.join uses backslash
+    # which breaks loading on Linux (Render/Docker)
     registry = {
-        "lgbm_model_path":      lgbm_path,
-        "preprocessor_path":    preprocessor_path,
+        "lgbm_model_path":      lgbm_path.replace("\\", "/"),
+        "preprocessor_path":    preprocessor_path.replace("\\", "/"),
         "ensemble_weights":     ensemble_weights,
         "rmsle":                round(metrics.get("rmsle", 0), 6),
         "r2":                   round(metrics.get("r2",    0), 4),
         "trained_at":           time.strftime("%Y-%m-%d %H:%M:%S"),
-        "model_card_path":      model_card_path,
+        "model_card_path":      model_card_path.replace("\\", "/"),
     }
     path = os.path.join(model_dir, "latest_model.json")
     with open(path, "w") as f:
