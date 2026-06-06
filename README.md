@@ -123,6 +123,7 @@ Walk-Forward Validation (3 splits · val=16 days · NO shuffle · NO leakage)
          │  Docker + GitHub Actions CI/CD      │
          └────────────────────────────────────┘
 ```
+
 ---
 
 ## 🎬 System Demo (End-to-End Flow)
